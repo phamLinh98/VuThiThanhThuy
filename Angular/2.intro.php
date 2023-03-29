@@ -8,7 +8,7 @@
 </head>
 <body>
 	<div ng-app= "" ng-init = "firstName = 'Linh'">
-		<p>The name is: <span ng-bind = "firstName"></span></p>
+		<p>Tên tôi là: <span ng-bind = "firstName"></span></p>
 	</div>
 </body>
 </html>
