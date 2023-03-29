@@ -10,4 +10,5 @@
 <div ng-app="" ng-init="'Color:'red'">
 	<input type="text" style="background-color: {{Color}}" ng-model="Color">
 </body>
+<!--Test tinh nang Git Hub--->
 </html>
