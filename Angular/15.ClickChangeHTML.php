@@ -16,6 +16,7 @@
 		$scope.name = "LinhThuSinh";
 		$scope.changeName = function(){
 			$scope.name = "Success";
+			//Test Văn Git
 		}
 	});
 </script>
