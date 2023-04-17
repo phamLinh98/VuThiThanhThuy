@@ -1,0 +1,78 @@
+const express = require('express')
+const app = express()
+const port = 3000
+//const connect = require('connect');
+const bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+const { Pool } = require('pg')
+const pool = new Pool({
+    user: 'postgres',
+    host: 'localhost',
+    database: 'data_04',
+    password: '123456',
+    port: 7007
+})
+//API demo
+app.get('/api/demo', (req, res) => {
+    res.json('Hello World!')
+})
+//API for List
+app.get('/api/list', (req, res) => {
+    pool.query('SELECT * FROM employer ORDER BY id ASC', (err, result) => {
+        if (err) {
+            console.log(err);
+            res.status(500).send('Fetching Fail');
+        }
+        else {
+            res.send(result.rows);
+        }
+    })
+    //pool.query('ALTER TABLE employer ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY')
+
+});
+//API for Insert
+app.post('/api/create', async (req, res) => {
+    const { name, job } = req.body; 
+    const query = 'INSERT INTO employer(name,job) VALUES($1 ,$2) RETURNING id'; 
+    try {
+        const result = await pool.query(query, [name, job]);
+        const idInsert = result.rows[0].id; 
+        res.json({messenger:"Da them thanh cong", data:{id: idInsert, name, job }}); 
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).send('Error Insert');
+    }
+})
+//API for Update
+app.put('/api/update/:id', async (req, res) => {
+    try {
+      const query = {
+        text: 'UPDATE employer SET name = $1, job = $2 WHERE id = $3 RETURNING *',
+        values: [req.body.name, req.body.job, req.params.id]
+      };
+      const { rows } = await pool.query(query);
+      res.json(rows[0]);
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  });
+  //API for Delete
+  app.delete('/api/delete/:id', async (req, res) => {
+    try {
+      const query = {
+        text: 'DELETE FROM employer WHERE id = $1 RETURNING *', 
+        values: [req.params.id]
+      };
+      const { rows } = await pool.query(query);
+      res.json({message:"Da xoa thanh cong",data:rows[0]});
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+  });
+  
+//Server Running
+app.listen(port, () => {
+    console.log(`Example app listening on port ${port}`)
+})
